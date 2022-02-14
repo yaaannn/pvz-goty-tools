@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace pvz_goty_tools
 {
@@ -84,15 +79,15 @@ namespace pvz_goty_tools
         /// <summary>
         /// 读取指定内存的值
         /// </summary>
-        /// <param name="baseAddress">基值</param>
+        /// <param name="address">基值</param>
         /// <param name="processName">进程名</param>
         /// <returns></returns>
-        public static int ReadMemoryValue(int baseAddress, string windowTitle)
+        public static int ReadMemoryValue(int address, string windowTitle)
         {
             byte[] buffer = new byte[4];
             IntPtr byteAddress = Marshal.UnsafeAddrOfPinnedArrayElement(buffer, 0);
             IntPtr hProcess = OpenProcess(0x1F0FFF, false, GetPidByWindowTitle(windowTitle));
-            ReadProcessMemory(hProcess, (IntPtr)baseAddress, byteAddress, 4, IntPtr.Zero);
+            ReadProcessMemory(hProcess, (IntPtr)address, byteAddress, 4, IntPtr.Zero);
             CloseHandle(hProcess);
             return Marshal.ReadInt32(byteAddress);
         }
@@ -100,14 +95,15 @@ namespace pvz_goty_tools
         /// <summary>
         /// 向指定的内存写入值
         /// </summary>
-        /// <param name="baseAddress">基址</param>
+        /// <param name="address">基址</param>
         /// <param name="processName">进程名</param>
         /// <param name="value">要写入的值</param>
-        public static void WriteMemoryValue(int baseAddress, string windowTitle, int value)
+        public static bool WriteMemoryValue(int address, string windowTitle, int value)
         {
             IntPtr hProcess = OpenProcess(0x1F0FFF, false, GetPidByWindowTitle(windowTitle)); //0x1F0FFF 最高权限
-            WriteProcessMemory(hProcess, (IntPtr)baseAddress, new int[] { value }, 4, IntPtr.Zero);
+            bool a = WriteProcessMemory(hProcess, (IntPtr)address, new int[] { value }, 4, IntPtr.Zero);
             CloseHandle(hProcess);
+            return a;
         }
 
     }
